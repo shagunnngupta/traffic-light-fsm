@@ -1,0 +1,42 @@
+// tb_traffic.v - Testbench for traffic_light
+`timescale 1ns/1ps
+
+module tb_traffic;
+    reg clk;
+    reg rst_n;
+    wire [2:0] ns;
+    wire [2:0] ew;
+
+    // instantiate DUT
+    traffic_light dut (
+        .clk(clk),
+        .rst_n(rst_n),
+        .ns(ns),
+        .ew(ew)
+    );
+
+    // clock: 10ns period (100 MHz) - you can choose any
+    initial clk = 0;
+    always #5 clk = ~clk;
+
+    // waveform dump
+    initial begin
+        $dumpfile("dump.vcd");
+        $dumpvars(0, tb_traffic);
+    end
+
+    // stimulus
+    initial begin
+        // reset
+        rst_n = 0;
+        #20;
+        rst_n = 1;
+
+        // run long enough to see several cycles
+        #2000;
+
+        $display("Simulation finished");
+        $finish;
+    end
+
+endmodule

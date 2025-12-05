@@ -1,0 +1,74 @@
+// traffic_light.v
+// Simple Moore FSM for a 2-way traffic light
+// Outputs: {NS_red, NS_yel, NS_green, EW_red, EW_yel, EW_green}
+// States: NS_GREEN, NS_YELLOW, ALL_RED, EW_GREEN, EW_YELLOW, ALL_RED2
+
+module traffic_light (
+    input  wire clk,
+    input  wire rst_n,      // active low reset
+    output reg [2:0] ns,   // ns = {red, yellow, green}
+    output reg [2:0] ew    // ew = {red, yellow, green}
+);
+
+    typedef enum logic [2:0] {
+        S_NS_GREEN  = 3'd0,
+        S_NS_YEL    = 3'd1,
+        S_ALL_RED   = 3'd2,
+        S_EW_GREEN  = 3'd3,
+        S_EW_YEL    = 3'd4,
+        S_ALL_RED2  = 3'd5
+    } state_t;
+
+    state_t state, next_state;
+    reg [15:0] counter; // simple cycle counter for state durations
+
+    // state duration parameters (in clock ticks)
+    localparam NS_GREEN_T = 16'd50;
+    localparam NS_YEL_T   = 16'd10;
+    localparam ALL_RED_T  = 16'd5;
+    localparam EW_GREEN_T = 16'd50;
+    localparam EW_YEL_T   = 16'd10;
+    localparam ALL_RED2_T = 16'd5;
+
+    // synchronous state + counter
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            state <= S_NS_GREEN;
+            counter <= 0;
+        end else begin
+            if (counter == 16'hFFFF) counter <= 0;
+            else counter <= counter + 1;
+            state <= next_state;
+        end
+    end
+
+    // next state logic and counter reset
+    always @(*) begin
+        next_state = state;
+        case (state)
+            S_NS_GREEN: if (counter >= NS_GREEN_T-1) next_state = S_NS_YEL;
+            S_NS_YEL:   if (counter >= NS_YEL_T-1)   next_state = S_ALL_RED;
+            S_ALL_RED:  if (counter >= ALL_RED_T-1)  next_state = S_EW_GREEN;
+            S_EW_GREEN: if (counter >= EW_GREEN_T-1) next_state = S_EW_YEL;
+            S_EW_YEL:   if (counter >= EW_YEL_T-1)   next_state = S_ALL_RED2;
+            S_ALL_RED2: if (counter >= ALL_RED2_T-1) next_state = S_NS_GREEN;
+            default: next_state = S_NS_GREEN;
+        endcase
+    end
+
+    // output logic (Moore: depends only on state)
+    always @(*) begin
+        // default: all red
+        ns = 3'b100; // red,yel,green encode: {red,yel,green}
+        ew = 3'b100;
+        case (state)
+            S_NS_GREEN: begin ns = 3'b001; ew = 3'b100; end
+            S_NS_YEL:   begin ns = 3'b010; ew = 3'b100; end
+            S_ALL_RED:  begin ns = 3'b100; ew = 3'b100; end
+            S_EW_GREEN: begin ns = 3'b100; ew = 3'b001; end
+            S_EW_YEL:   begin ns = 3'b100; ew = 3'b010; end
+            S_ALL_RED2: begin ns = 3'b100; ew = 3'b100; end
+        endcase
+    end
+
+endmodule
