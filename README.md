@@ -10,12 +10,12 @@ This version includes a **Pedestrian Button Feature**:
 ---
 
 ## 📁 Project Structure
-traffic-light-fsm/
-├── traffic_light.v # Main FSM with pedestrian support
-├── tb_traffic.v # Testbench
-├── dump.vcd # Waveform dump (sim output)
-└── screenshots/
-└── waveform.png # Waveform screenshot
+traffic-light-fsm\
+├── traffic_light.v # Main FSM with pedestrian support\
+├── tb_traffic.v # Testbench\
+├── dump.vcd # Waveform dump (sim output)\
+└── screenshots\
+└── waveform.png # Waveform screenshot\
 
 ---
 
