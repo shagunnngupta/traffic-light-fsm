@@ -20,12 +20,12 @@ traffic-light-fsm\
 ---
 
 ## 🧠 FSM States  
-0 → NS_GREEN
-1 → NS_YELLOW
-2 → ALL_RED
-3 → EW_GREEN
-4 → EW_YELLOW
-5 → ALL_RED2
+0 → NS_GREEN\
+1 → NS_YELLOW\
+2 → ALL_RED\
+3 → EW_GREEN\
+4 → EW_YELLOW\
+5 → ALL_RED2\
 
 Pedestrian request (`ped_button`) is latched and extends the NS green period.
 
